@@ -1,0 +1,16 @@
+main{
+    height: 100vh;
+    background-color: darkgray;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+}
+
+main>form{
+    max-width: 100vw;
+}
+
+input,button{
+    font-size: 1.5em;
+}

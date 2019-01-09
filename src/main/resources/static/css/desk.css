@@ -1,0 +1,19 @@
+.tool-control{
+    width: 2em;
+    height: 2em;
+    background-color: whitesmoke;
+    border-radius: 50%;
+    border: 2px solid lightgray;
+    font-size: 1.5em;
+    box-shadow: 0 0 .6em black;
+    margin: .2em auto;
+    outline: none;
+}
+
+#tool{
+    position: fixed;
+    right: 1em;
+    bottom: 1em;
+    display: flex;
+    flex-direction: column;
+}

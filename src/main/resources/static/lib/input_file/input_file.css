@@ -1,0 +1,63 @@
+.up-file {
+    display: flex;
+    /*flex-wrap: wrap;*/
+    /*font-size: 1.2em;*/
+    border: solid lightgrey 1px;
+    border-radius: 5px;
+    width: 100%;
+}
+
+@keyframes dig-in {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: .3;
+    }
+}
+
+.up-file .up-button[disabled] {
+    cursor: not-allowed;
+    animation: dig-in ease-in .5s forwards;
+}
+
+.up-file-control {
+    padding: .5em 1em;
+    line-height: 1;
+    height: 100%;
+    text-align: center;
+    display: inline-block;
+    overflow: hidden;
+    position: relative;
+}
+
+.up-file-control:hover{
+    font-weight: bold;
+}
+
+.up-file .input-file {
+    /*width: 13em;*/
+    cursor: pointer;
+    color: grey;
+    flex-grow: 1;
+}
+
+.up-file .up-button {
+    border: none;
+    background: #14c163;
+    color: whitesmoke;
+}
+
+.up-file .up-label {
+    font-size: 2px;
+}
+
+.input-file input {
+    position: absolute;
+    right: 0;
+    top: 0;
+    opacity: 0;
+    filter: alpha(opacity=0);
+    cursor: pointer;
+}

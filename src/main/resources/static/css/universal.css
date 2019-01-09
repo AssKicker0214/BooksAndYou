@@ -1,0 +1,56 @@
+.uni-input-group{
+    display: flex;
+    margin: 0 -2px;
+}
+
+.uni-input-group>*{
+    margin: 0 2px;
+}
+
+.uni-input-group>input{
+    flex-grow: 1;
+    border: none;
+    border-radius: 5px;
+    padding: .2em .5em;
+}
+
+
+/* button */
+.uni-btn{
+    position: relative;
+    background-color: white;
+    border: none;
+    padding: .2em 1em;
+    border-radius: 5px;
+
+    animation: down .1s ease-in forwards;
+}
+.uni-btn:hover{
+    animation: up .15s ease-out forwards;
+}
+
+/* up */
+@keyframes up{
+    0%{
+        top: 0;
+        box-shadow: 0 0 0 transparent
+    }
+    
+    100%{
+        top: -.2em;
+        box-shadow: 0 .2em .3em gray;
+    }
+}
+
+/* down */
+@keyframes down{
+    0%{
+        top: -.2em;
+        box-shadow: 0 .2em .3em gray;
+    }
+    
+    100%{
+        top: 0;
+        box-shadow: 0 0 0 transparent
+    }
+}
