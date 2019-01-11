@@ -9,30 +9,38 @@
     <link rel="stylesheet" href="/css/universal.css">
     <!--<script src="/lib/vue/vue.js"></script>-->
     <link rel="stylesheet" href="/css/desk.css">
+    <link rel="stylesheet" href="/lib/font-awesome/all.css">
     <script src="/lib/vue/vue.js"></script>
     <script src="/lib/sockjs-client/sockjs.min.js"></script>
     <script src="/lib/stomp/stomp.js"></script>
+
+    <link rel="stylesheet" href="/css/tool.css">
+    <script src="/js/tool.js"></script>
 </head>
 
 <body>
     <header id="token" style="display: none;" th:text="${token}"></header>
-    <input type="text">
-    <button onclick="ws.send()">send</button>
     <main id="main">
-        <aside id="tool">
-            <button class="tool-control" @click="next">&gt;</button>
-            <button class="tool-control">-</button>
-            <button class="tool-control" @click="last">&lt;</button>
-        </aside>
-        <article v-html='html'></article>
+        <article v-html='html' @click="selectHighlightingRange"></article>
+
+        <tool :text="text" @send="send" :highlighting="highlighting" 
+            @switch-highlighting="switchHighlighting"
+            @vote-next="voteNext" @vote-previous="votePrevious"
+            :waiting-next="waitingNext" :waiting-previous="waitingPrevious"></tool>
     </main>
+    <div id="responsor" :class="[show?'show-responsor':'']">
+        <header>
+            <i :class="['fas', icon]"></i>
+            <span v-text="header"></span>
+
+        </header>
+        <p v-text="content"></p>
+    </div>
 </body>
 
-<script src='/js/desk.js'>
-
-</script>
+<script src='/js/desk.js'></script>
 <script>
-    window.onload = function(){
+    window.onload = function () {
         ws.connect();
     }
 </script>

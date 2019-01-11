@@ -8,6 +8,7 @@ import nl.siegmann.epublib.epub.EpubReader;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,6 +20,8 @@ public class Desk {
     private List<Reader> readers;
     private int blockPtrStart;
     private int blockPtrEnd;
+
+    private String directionVoting = "current";
 
     Desk(String id, String bookName, List<Reader> readers, int blockPtrStart, int blockPtrEnd) {
         this.id = id;
@@ -69,8 +72,66 @@ public class Desk {
         return false;
     }
 
+    /**
+     * @param readerID
+     * @param direction
+     * @return 投票是否通过
+     */
+    public boolean vote(String readerID, String direction) {
+        // 落实读者投票
+        readers.stream().filter(reader -> reader.getID().equals(readerID)).forEach(targetReader -> targetReader.vote(direction));
+
+        // 检查投票结果
+        int voting = readers.stream().map(Reader::getVoting).reduce((v1, v2) -> v1 & v2).get();
+
+        // 不一致的投票结果，或是还有读者未投票
+        if (voting == Reader.DIRECTION_UNKNOWN) {
+            return false;
+        } else {
+            readers.forEach(Reader::clearVoting);
+            if(voting == Reader.DIRECTION_NEXT){
+                this.next();
+            }else if(voting == Reader.DIRECTION_PREVIOUS){
+                this.previous();
+            }
+            return true;
+        }
+
+        /*// 执行翻页，并初始化Reader的投票选项
+        switch (voting) {
+            case Reader.DIRECTION_CURRENT:
+                return this.current();
+            case Reader.DIRECTION_PREVIOUS:
+                return this.previous();
+            case Reader.DIRECTION_NEXT:
+                return this.next();
+            default:
+                return null;
+        }*/
+    }
+
     public List<String> next() {
-        return itr(400, 1);
+        return itr(300, 1);
+    }
+
+
+    public List<String> current() {
+        return blocks.subList(blockPtrStart, blockPtrEnd);
+    }
+
+    public List<String> previous() {
+        return itr(300, -1);
+
+    }
+
+    public List<String> skip(int pages, String direction){
+        List<String> rs = new ArrayList<>();
+        assert direction.equals("next") || direction.equals("previous");
+        int step = direction.equals("next") ? 1 : -1;
+        for(int i=0;i<pages;i++){
+            rs = this.itr(300, step);
+        }
+        return rs;
     }
 
     public List<String> itr(int approximateChars, int step) {
@@ -82,28 +143,18 @@ public class Desk {
             p += step;
         }
 
-        if(step == 1){
+        if (step == 1) {
             // next
             blockPtrStart = blockPtrEnd;
             blockPtrEnd = p;
-        }else{
+        } else {
             blockPtrEnd = blockPtrStart;
             blockPtrStart = p;
         }
-        System.out.println(blockPtrStart+" - "+blockPtrEnd);
+        System.out.println(blockPtrStart + " - " + blockPtrEnd);
         return current();
 
     }
-
-    public List<String> current(){
-        return blocks.subList(blockPtrStart, blockPtrEnd);
-    }
-
-    public List<String> last() {
-        return itr(400, -1);
-
-    }
-
 
     public String getId() {
         return id;
@@ -123,7 +174,7 @@ public class Desk {
         return blockPtrEnd;
     }
 
-    public int getBlockPtrStart(){
+    public int getBlockPtrStart() {
         return blockPtrStart;
     }
 }

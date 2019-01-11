@@ -17,14 +17,19 @@ public class Token {
     private void check(String token){
         String[] segs = token.split("-");
         if(segs.length != 2){
+            // 检查token格式
             this.validation = 0b000;
         }else{
             int v = VALID_FORMAT;
             this.deskID = segs[0];
             this.readerID = segs[1];
+
+            // 检查书桌是否存在
             if (DeskManager.existDesk(this.deskID)){
                 v |= VALID_DESK;
             }
+
+            // 检查读者是否存在
             if (DeskManager.existReader(this.deskID, this.readerID)){
                 v |= VALID_READER;
             }

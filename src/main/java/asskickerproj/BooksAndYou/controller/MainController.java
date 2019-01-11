@@ -32,23 +32,26 @@ public class MainController {
     @GetMapping("/turn-page")
     public List<String> next(@RequestParam("token") String token, @RequestParam("direction") String direction) {
         Token t = new Token(token);
-        List<String> empty = new ArrayList<>();
-
-
         Desk desk;
         if (!t.isValid() || (desk = DeskManager.getDesk(t.getDeskID())) == null) {
-            return empty;
+            return new ArrayList<>();
         }
 
+        List<String> res;
         switch (direction) {
             case "current":
-                return desk.current();
+                res = desk.current();
+                break;
             case "last":
-                return desk.last();
+                res = desk.previous();
+                break;
             case "next":
-                return desk.next();
+                res = desk.next();
+                break;
             default:
-                return desk.current();
+                res = desk.current();
         }
+        DeskManager.dumpDesk(desk);
+        return res;
     }
 }
