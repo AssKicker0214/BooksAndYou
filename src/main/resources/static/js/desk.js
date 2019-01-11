@@ -87,6 +87,7 @@ let responsor = new Vue({
         header: "qhb",
         content: "asdfjlkasdjf发生了的咖啡机阿斯利康地方啊圣诞快乐房价爱丽丝的开发啊螺丝扣搭街坊按时灯笼裤发",
         show: false,
+        responsorTimer: 3000,
     },
     methods: {
         handleResponse: function (msg) {
@@ -96,7 +97,7 @@ let responsor = new Vue({
 
             switch (res.name) {
                 case 'chat':
-                    this.show = true;
+                    this.resetShow(true);
                     console.log("[chat] -> " + res);
                     this.icon = "fa-comment-alt";
                     this.header = seg[1];
@@ -127,13 +128,24 @@ let responsor = new Vue({
                     }
                     break;
             }
-            setTimeout(()=>{
-                this.show = false;
-            }, 3000)
+
         },
+        
+        resetShow: function(show){
+            this.responsorTimer = 3000;
+            this.show = show;
+        }
+    },
+
+    created: function(){
+        setInterval(()=>{
+            if(this.responsorTimer<=0){
+                this.show = false;
+            }else{
+                this.responsorTimer -= 500;
+            }
+        }, 500)
     }
-
-
 
 })
 

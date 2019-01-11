@@ -59,7 +59,7 @@ body{
 }
 #responsor.show-responsor{
     display: block;
-    animation: show-responsor 3s;
+    animation: show-responsor 3s forwards;
 }
 #responsor>header{
     font-weight: bolder;
