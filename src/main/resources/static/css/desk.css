@@ -31,7 +31,6 @@ body{
 
 @keyframes show-responsor{
     0%{
-        display: block;
         opacity: 0;
     }
     10%{
@@ -59,6 +58,7 @@ body{
     /* border-radius: .5em; */
 }
 #responsor.show-responsor{
+    display: block;
     animation: show-responsor 3s;
 }
 #responsor>header{
