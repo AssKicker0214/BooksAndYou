@@ -3,29 +3,33 @@ body{
     margin: 0;
     padding: 0;
 }
+#main.night{
+    background: black;
+    color: white;
+}
 
 #main{
     width: 100vw;
     height: 100vh;
     display: flex;
     flex-direction: column;
-    flex-grow: 1;
 }
 
 #main>article{
+    flex-grow: 1;
     overflow-y: auto;
     padding: .5em 1em 0 1em;
 }
 
 .char{
     font-size: 1.2em;
-    background-color: white;
+    /* background-color: white; */
     margin: 0;
     padding: 0;
 }
 
 .char.highlighting-char{
-    background-color: orange;
+    background-color: #f44336;
     color: white;
 }
 
@@ -46,37 +50,48 @@ body{
 
 #responsor{
     position: fixed;
-    color: wheat;
-    box-shadow: 0 0 0.5em grey;
-    width: 20em;
+    box-shadow: 0 0 1em grey;
+    width: 100%;
     top: 50%;
-    margin: 0 auto;
+    margin: 0 1em;
     left: 0;
     right: 0;
-    opacity: 0;
+    opacity: 1;
     display: none;
     /* border-radius: .5em; */
+    list-style: none;
+    background: rgba(0,0,0,.3);
+    padding: 0;
+}
+#responsor>li{
+    background: rgba(110,110,110,.95);
+    display: flex;
+    align-items: center;
+    margin: 2px 0;
+}
+#responsor>li>div{
+    background: #2196F3;
+    color: white;
+    padding: .5em;
+    align-self: stretch;
+    height: auto;
+    display: flex;
+    align-items: center;
+}
+#responsor>li>header{
+    font-weight: bolder;
+    padding: 0 .5em;
+    color: white;
+}
+#responsor>li>header::after{
+    content: ":";
+}
+#responsor>li>p{
+    margin: .5em;
+    color: whitesmoke;
+    word-break: break-all;
 }
 #responsor.show-responsor{
     display: block;
     animation: show-responsor 3s forwards;
-}
-#responsor>header{
-    font-weight: bolder;
-    display: flex;
-    justify-content: space-between;
-    padding: .5em .5em .1em .5em;
-    background-color: rgba(0,0,0,.9);
-    font-size: 1.1em;
-
-    border-top-left-radius: .5em;
-    border-top-right-radius: .5em;
-}
-#responsor>p{
-    margin: 0;
-    padding: .5em;
-    background-color: rgba(230,220,220,.9);
-    color: black;
-    max-height: 5em;
-    overflow-y: auto;
 }

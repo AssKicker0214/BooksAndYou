@@ -3,7 +3,6 @@ const debug = false;
 
 let ws = {
     client: null,
-    cmdPtn: /#(\S+)(?: (\S+)*)?/,
     connect: function () {
         let socket = new SockJS('/gs-guide-websocket');
         this.client = Stomp.over(socket);
@@ -22,29 +21,16 @@ let ws = {
             console.info('[ws disconnected]');
         }
     },
-    // send: function (msg) {
-    //     this.client.send('/desk/turn-page', {}, msg)
-    // },
-    send: function (msg) {
-        if (msg === undefined || msg === null || msg === "") return;
-        console.log("[ws send] " + msg);
-        let groups = msg.match(this.cmdPtn);
-        if (!groups) {
-            this.client.send("/desk/chat", {}, JSON.stringify({
-                token: token,
-                name: 'chat',
-                text: msg
-            }))
-        } else {
-            let cmd = groups[1];
-            let args = groups[2] === undefined?[]:groups[2].split(",");
-            switch (cmd){
-                case 'skip':    this.requestSkipPage(...args);break;
-            }
-        }
+
+    chat: function (msg) {
+        this.client.send("/desk/chat", {}, JSON.stringify({
+            token: token,
+            name: 'chat',
+            text: msg
+        }))
     },
 
-    requestTurnPage: function(direction){
+    requestTurnPage: function (direction) {
         console.info(`[ ws request turn page] -> ${direction}`)
         this.client.send('/desk/turn-page', {}, JSON.stringify({
             token: token,
@@ -53,7 +39,7 @@ let ws = {
         }))
     },
 
-    requestSkipPage: function(direction, pages){
+    requestSkipPage: function (direction, pages) {
         console.info(`[ws request skip page] -> ${direction} ${pages}`);
         this.client.send('/desk/skip-page', {}, JSON.stringify({
             token: token,
@@ -83,10 +69,15 @@ let ws = {
 let responsor = new Vue({
     el: "#responsor",
     data: {
-        icon: "fa-comment-alt",
-        header: "qhb",
-        content: "asdfjlkasdjf发生了的咖啡机阿斯利康地方啊圣诞快乐房价爱丽丝的开发啊螺丝扣搭街坊按时灯笼裤发",
+        list: [
+            /* {
+                icon: "fa-comment-alt",
+                header: "qhb",
+                content: ""
+            } */
+        ],
         show: false,
+        maxCache: 3,
         responsorTimer: 3000,
     },
     methods: {
@@ -97,11 +88,8 @@ let responsor = new Vue({
 
             switch (res.name) {
                 case 'chat':
+                    this.append("fa-comment-alt", seg[1], res.text);
                     this.resetShow(true);
-                    console.log("[chat] -> " + res);
-                    this.icon = "fa-comment-alt";
-                    this.header = seg[1];
-                    this.content = res.text;
                     break;
                 case 'highlight':
                     let start = parseInt(res.start);
@@ -117,31 +105,42 @@ let responsor = new Vue({
                     break;
                 case 'turn-page':
                     console.log(`[turn page] -> ${res.ok}`);
-                    if(res.ok){
+                    if (res.ok) {
                         main.current();
                     }
                     break;
                 case 'skip-page':
                     console.log(`[skip page] -> ${res.ok}`);
-                    if(res.ok){
+                    if (res.ok) {
                         main.current();
                     }
                     break;
             }
 
         },
-        
-        resetShow: function(show){
+
+        append: function(icon, header, content){
+            if(this.list.length >= this.maxCache){
+                this.list.shift();
+            }
+            this.list.push({
+                icon: icon,
+                header: header,
+                content: content
+            })
+        },
+
+        resetShow: function (show) {
             this.responsorTimer = 3000;
             this.show = show;
         }
     },
 
-    created: function(){
-        setInterval(()=>{
-            if(this.responsorTimer<=0){
+    created: function () {
+        setInterval(() => {
+            if (this.responsorTimer <= 0) {
                 this.show = false;
-            }else{
+            } else {
                 this.responsorTimer -= 500;
             }
         }, 500)
@@ -152,6 +151,9 @@ let responsor = new Vue({
 let main = new Vue({
     el: "#main",
     data: {
+        nightMode: false,
+        placeholder: [0, 0],
+
         chars: 400,
         selecting: false,
         html: "",
@@ -225,6 +227,10 @@ let main = new Vue({
             })
         },
 
+        contentHtml: function(){
+            return /*html*/`<div style="float: left; width: ${this.placeholder[0]}px; height: ${this.placeholder[1]}px;"></div>\n` + this.html;
+        },
+
         /**
          * 命令服务器保存当前desk的状态
          */
@@ -244,8 +250,28 @@ let main = new Vue({
         /**
          * 发送字符串
          */
-        send: function (s) {
-            ws.send(s);
+        send: function (msg) {
+            if (msg === undefined || msg === null || msg === "") return;
+
+            const cmdPtn = /^#(\S+)(?: (\S+)*)?/;
+            let groups = msg.match(cmdPtn);
+            let cmd = null;
+            let args = null;
+            if (!groups) {
+                cmd = 'chat';
+                args = [msg];
+            } else {
+                cmd = groups[1];
+                args = groups[2] === undefined ? [] : groups[2].split(",");
+            }
+            console.info(`${cmd}(${args.join(", ")})`);
+            switch (cmd) {
+                case 'chat': ws.chat(...args); break
+                case 'skip': ws.requestSkipPage(...args); break;
+                case 'day': this.nightMode = false; break;
+                case 'night': this.nightMode = true; break;
+                case 'placeholder': this.placeholder = new Array(...args); break;
+            }
         },
 
         selectHighlightingRange: function () {
@@ -253,7 +279,7 @@ let main = new Vue({
                 if (this.highlightRange.length === 2) {
                     this.highlightRange = []
                 }
-                
+
                 window.event.target.classList.add('highlighting-char')
                 this.highlightRange.push(parseInt(window.event.target.id));
                 this.highlightRange.sort();

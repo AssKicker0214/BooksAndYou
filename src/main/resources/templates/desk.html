@@ -20,22 +20,24 @@
 
 <body>
     <header id="token" style="display: none;" th:text="${token}"></header>
-    <main id="main">
-        <article v-html='html' @click="selectHighlightingRange"></article>
+    <main id="main" :class="{'night': nightMode}">
+        <article v-html='contentHtml()' @click="selectHighlightingRange"></article>
 
         <tool :text="text" @send="send" :highlighting="highlighting" 
             @switch-highlighting="switchHighlighting"
             @vote-next="voteNext" @vote-previous="votePrevious"
             :waiting-next="waitingNext" :waiting-previous="waitingPrevious"></tool>
     </main>
-    <div id="responsor" :class="[show?'show-responsor':'']">
-        <header>
-            <i :class="['fas', icon]"></i>
-            <span v-text="header"></span>
-
-        </header>
-        <p v-text="content"></p>
-    </div>
+    <ul id="responsor" :class="[show?'show-responsor':'']">
+        <li v-for="item in list">
+            <div>
+                <i :class="['fas', item.icon]"></i>
+            </div>
+            <header v-text="item.header"></header>
+            <p v-text="item.content"></p>
+            
+        </li>
+    </ul>
 </body>
 
 <script src='/js/desk.js'></script>
